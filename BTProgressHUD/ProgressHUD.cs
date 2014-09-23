@@ -92,6 +92,7 @@ namespace BigTed
 		public UIColor HudForegroundColor = UIColor.White;
 		public UIColor HudStatusShadowColor = UIColor.Black;
 		public UIColor HudToastBackgroundColor = UIColor.Clear;
+		public UIColor HudTintColor = new UIColor (45.0f / 255.0f, 133.0f / 255.0f, 232.0f / 255.0f, 1);
 		public UIFont HudFont = UIFont.BoldSystemFontOfSize(16f);
 		public UITextAlignment HudTextAlignment = UITextAlignment.Center;
 		public Ring Ring = new Ring();
@@ -606,9 +607,10 @@ namespace BigTed
 			{
 				if (_stringLabel == null)
 				{
-					_stringLabel = new UILabel();
+					_stringLabel = new UILabel(new RectangleF(0,0,200,40));
 					_stringLabel.BackgroundColor = HudToastBackgroundColor;
-					_stringLabel.AdjustsFontSizeToFitWidth = true;
+					_stringLabel.AdjustsFontSizeToFitWidth = false;
+					_stringLabel.LineBreakMode = UILineBreakMode.WordWrap;
 					_stringLabel.TextAlignment = HudTextAlignment;
 					_stringLabel.BaselineAdjustment = UIBaselineAdjustment.AlignCenters;
 					_stringLabel.TextColor = HudForegroundColor;
@@ -618,7 +620,7 @@ namespace BigTed
 						_stringLabel.ShadowColor = HudStatusShadowColor;
 						_stringLabel.ShadowOffset = new CGSize(0, -1);
 					} 
-					_stringLabel.Lines = 0;
+					_stringLabel.Lines = 2;
 				}
 				if (_stringLabel.Superview == null)
 				{
@@ -638,7 +640,16 @@ namespace BigTed
 					_cancelHud = new UIButton();
 
 					_cancelHud.BackgroundColor = UIColor.Clear;
-					_cancelHud.SetTitleColor(HudForegroundColor, UIControlState.Normal);
+
+					if (IsiOS7)
+					{
+						_cancelHud.SetTitleColor (HudTintColor, UIControlState.Normal);
+					}
+					else
+					{
+						_cancelHud.SetTitleColor (HudForegroundColor, UIControlState.Normal);
+					}
+
 					_cancelHud.UserInteractionEnabled = true;
 					_cancelHud.Font = HudFont;
 					this.UserInteractionEnabled = true; 
@@ -968,6 +979,7 @@ namespace BigTed
 			nfloat hudHeight = 100f;
 			nfloat stringWidth = 0f;
 			nfloat stringHeight = 0f;
+			nfloat cancelHeight = 0f;
 			nfloat stringHeightBuffer = 20f;
 			nfloat stringAndImageHeightBuffer = 80f;
 
@@ -1026,9 +1038,9 @@ namespace BigTed
 			if (!string.IsNullOrEmpty(@cancelCaption))
 			{
 				const int gap = 20;
-				var stringSize = new NSString(@cancelCaption).StringSize(StringLabel.Font, new CGSize(200, 300));
-				stringWidth = stringSize.Width;
-				stringHeight = stringSize.Height;
+				int lineCount = Math.Min(10, @string.Split('\n').Length + 1);
+				var cancelSize = new NSString(@cancelCaption).StringSize(StringLabel.Font, new CGSize(200, 30 * lineCount));
+				cancelHeight = cancelSize.Height;
 
 				if (stringWidth > hudWidth)
 					hudWidth = (float)Math.Ceiling(stringWidth / 2) * 2;
@@ -1046,14 +1058,14 @@ namespace BigTed
 
 				if (hudHeight > 100)
 				{
-					cancelRect = new CGRect(12, cancelRectY, hudWidth, stringHeight);
+					cancelRect = new CGRect(12, cancelRectY, hudWidth, cancelHeight);
 					labelRect = new CGRect(12, labelRect.Y, hudWidth, stringHeight);
 					hudWidth += 24;
 				}
 				else
 				{
 					hudWidth += 24;
-					cancelRect = new CGRect(0, cancelRectY, hudWidth, stringHeight);
+					cancelRect = new CGRect(0, cancelRectY, hudWidth, cancelHeight);
 					labelRect = new CGRect(0, labelRect.Y, hudWidth, stringHeight);
 				}
 				CancelHudButton.Frame = cancelRect;
