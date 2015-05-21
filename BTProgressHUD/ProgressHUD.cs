@@ -22,16 +22,16 @@ using Foundation;
 using CoreAnimation;
 using CoreGraphics;
 #else
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.CoreAnimation;
-using MonoTouch.CoreGraphics;
+using UIKit;
+using Foundation;
+using CoreAnimation;
+using CoreGraphics;
 
 using nfloat = System.Single;
-using System.Drawing;
-using CGRect = global::System.Drawing.RectangleF;
-using CGPoint = global::System.Drawing.PointF;
-using CGSize = global::System.Drawing.SizeF;
+using CoreGraphics;
+using CGRect = global::CGRect;
+using CGPoint = global::CGPoint;
+using CGSize = global::CGSize;
 #endif
 
 namespace BigTed
@@ -607,7 +607,7 @@ namespace BigTed
 			{
 				if (_stringLabel == null)
 				{
-					_stringLabel = new UILabel(new RectangleF(0,0,200,40));
+					_stringLabel = new UILabel(new CGRect(0,0,200,40));
 					_stringLabel.BackgroundColor = HudToastBackgroundColor;
 					_stringLabel.AdjustsFontSizeToFitWidth = false;
 					_stringLabel.LineBreakMode = UILineBreakMode.WordWrap;
